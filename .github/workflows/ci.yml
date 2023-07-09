@@ -12,3 +12,9 @@ jobs:
       - run: dart analyze --fatal-infos
       - run: dart test
       - run: dart compile exe bin/tetris.dart -o /tmp/tetris
+      - name: build the Chrome extension
+        run: dart compile js -O2 --no-source-maps web/main.dart -o extension/game.js
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dartris-extension
+          path: extension

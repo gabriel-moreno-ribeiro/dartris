@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>dartris</title>
+<style>
+  body { margin: 0; padding: 12px; background: #15191f; color: #e6e6e6; font: 13px/1.4 system-ui, sans-serif; width: 360px; user-select: none; }
+  .layout { display: flex; gap: 12px; align-items: flex-start; }
+  canvas { display: block; background: #0b0e12; border-radius: 6px; }
+  #board { box-shadow: 0 0 0 2px #2a313b; }
+  .side { display: flex; flex-direction: column; gap: 10px; min-width: 110px; }
+  .side h1 { font-size: 15px; margin: 0 0 2px; letter-spacing: .04em; }
+  .side .label { color: #8b95a5; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+  .side .value { font-size: 18px; font-weight: 600; }
+  .keys { color: #8b95a5; font-size: 11px; line-height: 1.6; }
+  kbd { background: #2a313b; padding: 0 .35em; border-radius: 3px; font-family: monospace; color: #e6e6e6; }
+  #message { min-height: 1.2em; color: #f9c74f; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <canvas id="board" width="220" height="440"></canvas>
+  <div class="side">
+    <h1>dartris</h1>
+    <div><div class="label">score</div><div class="value" id="score">0</div></div>
+    <div><div class="label">lines</div><div class="value" id="lines">0</div> <span class="label">level</span> <span id="level">0</span></div>
+    <div><div class="label">next</div><canvas id="next" width="88" height="110"></canvas></div>
+    <div><div class="label">hold</div><canvas id="hold" width="88" height="110"></canvas></div>
+    <div id="message"></div>
+    <div class="keys">
+      <kbd>←</kbd><kbd>→</kbd> move · <kbd>↑</kbd> rotate · <kbd>Z</kbd> ccw<br>
+      <kbd>↓</kbd> soft · <kbd>space</kbd> hard · <kbd>C</kbd> hold<br>
+      <kbd>P</kbd> pause · <kbd>R</kbd> restart
+    </div>
+  </div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>

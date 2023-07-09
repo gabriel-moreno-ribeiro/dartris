@@ -1,59 +1,48 @@
 # dartris
 
-Tetris written from scratch in Dart, playable in the terminal. The game engine
-is a pure library with no UI dependencies, so it is fully unit-tested, and the
-terminal front-end is a thin layer of raw keyboard input and ANSI drawing.
+Tetris em Dart. O motor é uma biblioteca pura, sem nenhuma dependência de interface, e por isso tem duas caras: uma no terminal (ANSI, teclado cru) e uma **extensão do Chrome** que abre o jogo num popup na barra de ferramentas. Foi meu jeito de aprender Dart sem passar por Flutter.
 
-```sh
-dart run bin/tetris.dart          # random seed
-dart run bin/tetris.dart 42       # reproducible piece sequence
-dart compile exe bin/tetris.dart -o tetris && ./tetris
-```
+## Extensão do Chrome
 
-| Key | Action |
-| --- | --- |
-| `a` / `d` or arrows | move |
-| `w` / up | rotate clockwise |
-| `z` | rotate counter-clockwise |
-| `s` / down | soft drop |
-| `space` | hard drop |
-| `c` | hold |
-| `p` | pause |
-| `q` | quit |
+A pasta `extension/` já vem com o `game.js` compilado. `chrome://extensions` → modo desenvolvedor → "Carregar sem compactação" → escolhe `extension/`. Aparece um ícone na barra; clica e joga. Melhor pontuação fica salva no `localStorage`.
 
-## What is implemented
-
-- The seven tetrominoes with SRS orientations and simple wall kicks
-- 7-bag randomizer (every piece appears once per seven), seedable
-- Ghost piece, hold slot (once per piece), five-piece preview
-- Line clears with classic scoring (40 / 100 / 300 / 1200 x level+1),
-  hard-drop bonus, levels every ten lines with faster gravity
-- Game over when a piece cannot spawn or locks above the board
-- Terminal rendering with colours, 20 fps refresh, non-blocking input
-
-## Design
-
-`lib/tetris.dart` holds three classes:
-
-- `Piece`: an immutable tetromino (type, rotation, position) that knows the
-  board coordinates of its four cells.
-- `Board`: the grid, collision test (`fits`), placement and line clearing.
-- `Game`: the rules. Every input is a method (`moveLeft`, `rotateCw`,
-  `hardDrop`, `holdPiece`, ...) and time advances through `tick(elapsedMs)`,
-  which applies gravity steps as they come due. `render()` prints the state
-  as text, which makes the engine easy to test and to drive from any UI.
-
-`bin/tetris.dart` puts the terminal in raw mode, listens to stdin for keys
-(including arrow escape sequences), runs a timer for gravity and redraws the
-screen with ANSI escape codes.
-
-## Tests
+Pra recompilar depois de mexer no código:
 
 ```sh
 dart pub get
-dart test
+dart compile js -O2 --no-source-maps web/main.dart -o extension/game.js
 ```
 
-## License
+`web/main.dart` é o front-end de canvas (uns 150 linhas): desenha o tabuleiro, a peça fantasma, o próximo e o hold, e traduz teclado pra chamadas do motor.
 
-MIT
+## Terminal
+
+```sh
+dart run bin/tetris.dart          # seed aleatória
+dart run bin/tetris.dart 42       # sequência de peças reproduzível
+dart compile exe bin/tetris.dart -o tetris && ./tetris
+```
+
+| Tecla | Ação |
+| --- | --- |
+| `a` / `d` ou setas | mover |
+| `w` / cima | girar horário, `z` anti-horário |
+| `s` / baixo | soft drop, `space` hard drop |
+| `c` | hold |
+| `p` / `q` | pausa / sair |
+
+## O motor (`lib/tetris.dart`)
+
+- As sete peças com as orientações do SRS e wall kicks simples
+- Randomizador 7-bag (cada peça aparece uma vez a cada sete), com seed
+- Peça fantasma, hold (uma vez por peça), preview de cinco
+- Pontuação clássica (40 / 100 / 300 / 1200 × nível+1), bônus de hard drop, nível a cada dez linhas com gravidade mais rápida
+- Game over quando uma peça não consegue nascer ou trava acima do tabuleiro
+
+Três classes: `Piece` (imutável: tipo, rotação, posição, sabe suas quatro células), `Board` (grade, `fits`, colocação, limpeza de linhas) e `Game` (as regras; cada input é um método e o tempo avança por `tick(elapsedMs)`). O `render()` devolve o estado como texto, que é o que deixa o motor fácil de testar e de pendurar em qualquer UI. Foi a decisão de design que mais valeu a pena: a extensão foi escrita numa tarde porque o jogo já existia pronto.
+
+Testes: `dart test`.
+
+---
+
+**EN:** Tetris in Dart with a UI-free engine (SRS pieces, 7-bag randomizer, ghost, hold, preview, classic scoring and levels) and two front-ends: a terminal one and a Chrome extension popup compiled with `dart compile js` (the built `extension/game.js` is committed, so it loads unpacked as is). `dart test` covers the engine. MIT.
