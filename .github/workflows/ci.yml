@@ -4,7 +4,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
@@ -14,7 +14,7 @@ jobs:
       - run: dart compile exe bin/tetris.dart -o /tmp/tetris
       - name: build the Chrome extension
         run: dart compile js -O2 --no-source-maps web/main.dart -o extension/game.js
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: dartris-extension
           path: extension
